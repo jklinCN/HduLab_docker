@@ -19,6 +19,14 @@ RUN set -x \
               gawk build-essential bison flex texinfo gperf libtool patchutils bc xz-utils \
               zlib1g-dev libexpat-dev pkg-config libglib2.0-dev libpixman-1-dev git tmux python3 \
               vim gdb-multiarch qemu-system-misc gcc-riscv64-linux-gnu binutils-riscv64-linux-gnu pip sudo g++ make
+# 安装 rust
+USER hdu
+RUN set -x; \
+    RUSTUP='/home/hdu/rustup.sh' \
+    && cd $HOME \
+    && curl https://sh.rustup.rs -sSf > $RUSTUP && chmod +x $RUSTUP \
+    && $RUSTUP -y --default-toolchain nightly --profile minimal \
+    && rm /home/hdu/rustup.sh 
 
 # 安装 qemu
 USER root
@@ -30,6 +38,27 @@ RUN tar xvJf qemu-5.0.0.tar.xz \
     && make -j$(nproc) install \
     && cd $HOME && rm -rf qemu-5.0.0 qemu-5.0.0.tar.xz
 
+# rust换源
+USER hdu
+WORKDIR /home/hdu
+RUN set -x; \
+    CARGO_CONF='/home/hdu/.cargo/config'; \
+    BASHRC='/home/hdu/.bashrc' \
+    && echo 'export RUSTUP_DIST_SERVER=https://mirrors.ustc.edu.cn/rust-static' >> $BASHRC \
+    && echo 'export RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static/rustup' >> $BASHRC \
+    && echo 'export PATH=$PATH:$HOME/.cargo/bin' >> $BASHRC \
+    && touch $CARGO_CONF \
+    && echo '[source.crates-io]' > $CARGO_CONF \
+    && echo "replace-with = 'ustc'" >> $CARGO_CONF \
+    && echo '[source.ustc]' >> $CARGO_CONF \
+    && echo 'registry = "git://mirrors.ustc.edu.cn/crates.io-index"' >> $CARGO_CONF 
+
+# 安装 rust包 
+RUN /home/hdu/.cargo/bin/rustup target add riscv64gc-unknown-none-elf \
+    && /home/hdu/.cargo/bin/cargo install cargo-binutils --vers =0.3.3 \
+    && /home/hdu/.cargo/bin/rustup component add llvm-tools-preview \
+    && /home/hdu/.cargo/bin/rustup component add rust-src 
+
 # 安装 code-server
 COPY --chown=hdu code-server/code-server-4.2.0-linux-amd64.tar.gz /home/hdu/.local/
 COPY --chown=hdu code-server/config.yaml /home/hdu/.config/code-server/config.yaml
@@ -39,6 +68,23 @@ RUN cd /home/hdu/.local/ \
 USER root
 RUN  ln -s /home/hdu/.local/code-server-4.2.0-linux-amd64/code-server /usr/bin/code-server 
 RUN  ln -s /home/hdu/.local/code-server-4.2.0-linux-amd64/code-server /usr/bin/code
+
+# 安装 rust语言支持
+COPY --chown=hdu rust-analyzer/ /home/hdu
+USER hdu
+WORKDIR /home/hdu
+RUN tar -xvf node-v14.17.1-linux-x64.tar.gz 
+USER root
+RUN ln -s /home/hdu/node-v14.17.1-linux-x64/bin/node /usr/bin/node \
+    && ln -s /home/hdu/node-v14.17.1-linux-x64/bin/npm /usr/bin/npm
+USER hdu
+RUN tar -xvf rust-analyzer-2022-01-24.tar.gz \
+    && cd rust-analyzer-2022-01-24 \
+    && /home/hdu/.cargo/bin/cargo xtask install \
+    && rm /home/hdu/rust-analyzer-2022-01-24.tar.gz \
+    && rm -rf /home/hdu/rust-analyzer-2022-01-24/ \
+    && rm /home/hdu/node-v14.17.1-linux-x64.tar.gz \
+    && rm -rf /home/hdu/node-v14.17.1-linux-x64/
 
 # 安装 gdb-dashboard
 RUN wget -P ~ https://gitee.com/scolin19/gdb-dashboard/raw/master/.gdbinit | pip install pygments -i https://pypi.mirrors.ustc.edu.cn/simple/
@@ -62,9 +108,14 @@ RUN echo 'PROMPT_COMMAND="history -a"' >> /home/hdu/.bashrc \
 RUN mkdir experiments
 WORKDIR /home/hdu/experiments
 
-# os 
+# 1、c语言测试程序
+COPY --chown=hdu hellohdu.c /home/hdu/experiments/c_test/
+
+# 2、编译器
+#RUN mkdir tm && cd tm && git clone https://gitee.com/Pentium-Wu/tmc.git
+
+# 3、os
 RUN git clone -b 2022spring https://gitee.com/scolin19/rCore.git
-RUN git clone -b master https://gitlab.eduxiji.net/YzTz/os.git
 
 EXPOSE 8080
 COPY --chown=hdu init.sh /home/hdu/.local/init.sh

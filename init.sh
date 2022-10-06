@@ -1,10 +1,4 @@
-deb http://mirrors.ustc.edu.cn/ubuntu/ focal main restricted universe multiverse
-#deb-src https://mirrors.ustc.edu.cn/ubuntu/ focal main restricted universe multiverse
-deb http://mirrors.ustc.edu.cn/ubuntu/ focal-updates main restricted universe multiverse
-#deb-src https://mirrors.ustc.edu.cn/ubuntu/ focal-updates main restricted universe multiverse
-deb http://mirrors.ustc.edu.cn/ubuntu/ focal-backports main restricted universe multiverse
-#deb-src https://mirrors.ustc.edu.cn/ubuntu/ focal-backports main restricted universe multiverse
-deb http://mirrors.ustc.edu.cn/ubuntu/ focal-security main restricted universe multiverse
-#deb-src https://mirrors.ustc.edu.cn/ubuntu/ focal-security main restricted universe multiverse
-#deb https://mirrors.ustc.edu.cn/ubuntu/ focal-proposed main restricted universe multiverse
-#deb-src https://mirrors.ustc.edu.cn/ubuntu/ focal-proposed main restricted universe multiverse
+#!/bin/bash
+cd /home/hdu/experiments/rCore && git pull origin 2022spring
+cd /home/hdu/experiments/os && git pull origin master
+code-server
