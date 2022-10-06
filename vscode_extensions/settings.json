@@ -1,0 +1,8 @@
+{
+    "rust-analyzer.inlayHints.chainingHints": false,
+    "rust-analyzer.inlayHints.enable": false,
+    "rust-analyzer.inlayHints.parameterHints": false,
+    "rust-analyzer.inlayHints.smallerHints": false,
+    "rust-analyzer.inlayHints.typeHints": false,
+    "rust-analyzer.server.path": "/root/.local/vscode_extensions/rust-lsp"
+}
