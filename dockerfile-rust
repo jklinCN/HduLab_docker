@@ -87,7 +87,7 @@ RUN tar -xvf rust-analyzer-2022-01-24.tar.gz \
     && rm -rf /home/hdu/node-v14.17.1-linux-x64/
 
 # 安装 gdb-dashboard
-RUN wget -P ~ https://gitee.com/scolin19/gdb-dashboard/raw/master/.gdbinit | pip install pygments -i https://pypi.mirrors.ustc.edu.cn/simple/
+RUN wget -P ~ https://gitee.com/jklincn/gdb-dashboard/raw/master/.gdbinit | pip install pygments -i https://pypi.mirrors.ustc.edu.cn/simple/
 
 # 安装 vscode 插件
 COPY --chown=hdu vscode_extensions/ /home/hdu/.local/vscode_extensions
@@ -115,7 +115,7 @@ COPY --chown=hdu hellohdu.c /home/hdu/experiments/c_test/
 #RUN mkdir tm && cd tm && git clone https://gitee.com/Pentium-Wu/tmc.git
 
 # 3、os
-RUN git clone -b 2022spring https://gitee.com/scolin19/rCore.git
+RUN git clone -b 2022spring https://gitee.com/jklincn/rCore.git
 
 EXPOSE 8080
 COPY --chown=hdu init.sh /home/hdu/.local/init.sh

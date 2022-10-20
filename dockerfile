@@ -41,7 +41,7 @@ RUN  ln -s /home/hdu/.local/code-server-4.2.0-linux-amd64/code-server /usr/bin/c
 RUN  ln -s /home/hdu/.local/code-server-4.2.0-linux-amd64/code-server /usr/bin/code
 
 # 安装 gdb-dashboard
-RUN wget -P ~ https://gitee.com/scolin19/gdb-dashboard/raw/master/.gdbinit | pip install pygments -i https://pypi.mirrors.ustc.edu.cn/simple/
+RUN wget -P ~ https://gitee.com/jklincn/gdb-dashboard/raw/master/.gdbinit | pip install pygments -i https://pypi.mirrors.ustc.edu.cn/simple/
 
 # 安装 vscode 插件
 COPY --chown=hdu vscode_extensions/ /home/hdu/.local/vscode_extensions
@@ -63,7 +63,7 @@ RUN mkdir experiments
 WORKDIR /home/hdu/experiments
 
 # os 
-RUN git clone -b 2022spring https://gitee.com/scolin19/rCore.git
+RUN git clone -b 2022spring https://gitee.com/jklincn/rCore.git
 RUN git clone -b master https://gitlab.eduxiji.net/YzTz/os.git
 
 EXPOSE 8080
